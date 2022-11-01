@@ -2,13 +2,7 @@
  * http://api.tvmaze.com/search/shows?q=<search query>
  * http://api.tvmaze.com/shows/<show id>/episodes
  */
-const searchShowsURL = 'https://api.tvmaze.com/search/shows';
-
-
-/** Given a query string, return array of matching shows:
- *     { id, name, summary, episodesUrl }
- */
-
+const searchShowsURL = "https://api.tvmaze.com/search/shows";
 
 /** Search Shows
  *    - given a search term, search for tv shows that
@@ -33,7 +27,12 @@ async function searchShows(query) {
   // Creates objects with id, name, summary and image only.
   // Then add them to a list.
   for (let show of response.data) {
-    let showListing = (({ id, name, summary, image }) => ({ id, name, summary, image }))(show.show);
+    let showListing = (({ id, name, summary, image }) => ({
+      id,
+      name,
+      summary,
+      image,
+    }))(show.show);
     searchResults.push(showListing);
   }
 
@@ -50,33 +49,33 @@ function populateShows(shows) {
 
   for (let show of shows) {
     console.log(show);
-    if (show.image == null) show.image = { medium: 'https://tinyurl.com/tv-missing' };
-    if (show.summary == null) show.summary = 'Missing Summary';
+    if (show.image == null)
+      show.image = { medium: "https://tinyurl.com/tv-missing" };
+    if (show.summary == null) show.summary = "Missing Summary";
     let $item = $(
       `<div class="col-md-6 col-lg-3 Show" data-show-id="${show.id}">
-         <div class="card" data-show-id="${show.id}">
-         <img class="card-img-top" src="${show.image.medium}">
-           <div class="card-body">
-             <h5 class="card-title">${show.name}</h5>
-             <button class="btn btn-primary summary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${show.id}" aria-expanded="false" aria-controls="collapse-${show.id}">
-             Summary
-             </button>
-             <button class="btn btn-primary episodes" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-episodes" aria-expanded="false" aria-controls="collapse-episodes">
-             Episodes
-             </button>
-             <div class="collapse" id="collapse-${show.id}">
-              <div class="card card-body">
-                ${show.summary}
+          <div class="card" data-show-id="${show.id}">
+            <img class="card-img-top" src="${show.image.medium}">
+            <div class="card-body">
+              <h5 class="card-title">${show.name}</h5>
+              <button class="btn btn-primary summary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${show.id}" aria-expanded="false" aria-controls="collapse-${show.id}">
+              Summary
+              </button>
+              <button class="btn btn-primary episodes" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-episodes" aria-expanded="false" aria-controls="collapse-episodes">
+              Episodes
+              </button>
+              <div class="collapse" id="collapse-${show.id}">
+                <div class="card card-body">
+                  ${show.summary}
+                </div>
               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-      `);
+            </div>
+          </div>
+        </div>`
+    );
     $showsList.append($item);
   }
 }
-
 
 /** Handle search form submission:
  *    - hide episodes area
@@ -99,18 +98,53 @@ async function handleSearch(event) {
 
 $("#search-form").on("submit", handleSearch);
 
+async function handleEpisode(event) {
+  event.preventDefault();
+}
+
+function populateEpisodes(episodes) {
+  const $episodesList = $("#episodes-list");
+  $episodesList.empty();
+
+  // episode = { id, name, season, number }
+  for (let episode of episodes) {
+    console.log(episode);
+    if (episode.summary == null) episode.summary = "Missing Summary";
+    let $item = $(
+      `<div>
+        </div>`
+    );
+    $showsList.append($item);
+  }
+}
 /** Given a show ID, return list of episodes:
  *      { id, name, season, number }
  */
-async function getEpisodes(event, id) {
+async function getEpisodes(event) {
   event.preventDefault();
-  console.log(event.parent);
+  let showId = event.target.parentNode.parentNode.dataset.showId;
+  console.log(showId);
+
   // TODO: get episodes from tvmaze
   //       you can get this by making GET request to
   //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
-  let showURL = `http://api.tvmaze.com/shows/${id}/episodes`
-  const response = await axios.get(showsURL);
+  let showURL = `http://api.tvmaze.com/shows/${showId}/episodes`;
+  const response = await axios.get(showURL);
 
-  console.log(response);
+  const searchResults = [];
+
+  for (let episode of response.data) {
+    console.log(episode);
+    let episodeListing = (({ id, name, season, number }) => ({
+      id,
+      name,
+      season,
+      number,
+    }))(episode);
+    searchResults.push(episodeListing);
+  }
+
+  console.log(searchResults);
   // TODO: return array-of-episode-info, as described in docstring above
+  return searchResults;
 }
