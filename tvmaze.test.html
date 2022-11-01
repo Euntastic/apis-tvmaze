@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TV Maze</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap/dist/css/bootstrap.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://www.unpkg.com/jasmine-core/lib/jasmine-core/jasmine.css"
+    />
+    <script src="http://unpkg.com/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+    <script src="http://unpkg.com/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+    <script src="http://unpkg.com/jasmine-core/lib/jasmine-core/boot0.css"></script>
+    <script src="http://unpkg.com/jasmine-core/lib/jasmine-core/boot1.css"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>TV Maze</h1>
+
+      <form class="form-inline" id="search-form">
+        <input class="form-control" id="search-query" value="bletchley" />
+        <button class="btn btn-primary" type="submit">Go!</button>
+      </form>
+
+      <div class="row mt-3" id="shows-list"></div>
+
+      <section style="display: none" id="episodes-area">
+        <h2>Episodes</h2>
+        <ul id="episodes-list"></ul>
+      </section>
+
+      <script src="http://unpkg.com/jquery"></script>
+      <script src="http://unpkg.com/axios/dist/axios.js"></script>
+      <script src="tvmaze.js"></script>
+      <script src="tvmaze.test.js"></script>
+    </div>
+  </body>
+</html>
