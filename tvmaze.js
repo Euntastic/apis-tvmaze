@@ -127,7 +127,7 @@ function populateEpisodes(episodes) {
  *      { id, name, season, number }
  */
 async function getEpisodes(showId) {
-  let showURL = `http://api.tvmaze.com/shows/${showId}/episodes`;
+  let showURL = `https://api.tvmaze.com/shows/${showId}/episodes`;
   const response = await axios.get(showURL);
 
   const searchResults = [];
