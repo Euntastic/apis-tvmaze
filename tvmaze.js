@@ -61,7 +61,7 @@ function populateShows(shows) {
               <button class="btn btn-primary summary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${show.id}" aria-expanded="false" aria-controls="collapse-${show.id}">
               Summary
               </button>
-              <button class="btn btn-primary episodes" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-episodes" aria-expanded="false" aria-controls="collapse-episodes">
+              <button class="btn btn-primary episodes" type="button" data-bs-toggle="modal" data-bs-target="#modal-episodes" aria-expanded="false" aria-controls="modal-episodes">
               Episodes
               </button>
               <div class="collapse" id="collapse-${show.id}">
@@ -93,13 +93,20 @@ async function handleSearch(event) {
 
   populateShows(shows);
 
-  $(".episodes").click(getEpisodes);
+  $(".episodes").click(handleEpisodes);
 }
 
 $("#search-form").on("submit", handleSearch);
 
-async function handleEpisode(event) {
+async function handleEpisodes(event) {
   event.preventDefault();
+
+  let showId = event.target.parentNode.parentNode.dataset.showId;
+  console.log('Flag');
+  console.log(showId);
+
+  const episodes = await getEpisodes(showId);
+  populateEpisodes(episodes);
 }
 
 function populateEpisodes(episodes) {
@@ -108,33 +115,24 @@ function populateEpisodes(episodes) {
 
   // episode = { id, name, season, number }
   for (let episode of episodes) {
-    console.log(episode);
-    if (episode.summary == null) episode.summary = "Missing Summary";
     let $item = $(
-      `<div>
-        </div>`
+      `<li>${episode.name} (Season ${episode.season}, episode ${episode.number})</li>`
     );
-    $showsList.append($item);
+    $episodesList.append($item);
   }
 }
+
+
 /** Given a show ID, return list of episodes:
  *      { id, name, season, number }
  */
-async function getEpisodes(event) {
-  event.preventDefault();
-  let showId = event.target.parentNode.parentNode.dataset.showId;
-  console.log(showId);
-
-  // TODO: get episodes from tvmaze
-  //       you can get this by making GET request to
-  //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
+async function getEpisodes(showId) {
   let showURL = `http://api.tvmaze.com/shows/${showId}/episodes`;
   const response = await axios.get(showURL);
 
   const searchResults = [];
 
   for (let episode of response.data) {
-    console.log(episode);
     let episodeListing = (({ id, name, season, number }) => ({
       id,
       name,
@@ -144,7 +142,5 @@ async function getEpisodes(event) {
     searchResults.push(episodeListing);
   }
 
-  console.log(searchResults);
-  // TODO: return array-of-episode-info, as described in docstring above
   return searchResults;
 }
