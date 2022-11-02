@@ -102,8 +102,6 @@ async function handleEpisodes(event) {
   event.preventDefault();
 
   let showId = event.target.parentNode.parentNode.dataset.showId;
-  console.log('Flag');
-  console.log(showId);
 
   const episodes = await getEpisodes(showId);
   populateEpisodes(episodes);
